@@ -21,13 +21,24 @@ int main(){
     }
     connect(sockfd, (struct sockaddr *)&ser_addr, addr_len);
 
-    char message[] = {"Hi there"};
-    char receiveMessage[100] = {};
-    send(sockfd, message, sizeof(message), 0);
-    recv(sockfd, receiveMessage, sizeof(receiveMessage), 0);
+    char message[256];
+    while(1){
+        fgets(message, 256, stdin);
+        printf("%s", message);
+        if (strcmp(message, "exit\n") == 0)
+            break;
+        if (strcmp(message, "") != 0){
+            send(sockfd, message, sizeof(message), 0);
+            printf("Socket send: %s\n", message);
+            memset(message, 0, 256);
+        }
 
-    printf("%s",receiveMessage);
-    printf("close Socket\n");
+        char receiveMessage[100] = {};
+        int n = recv(sockfd, receiveMessage, sizeof(receiveMessage), 0);
+        if (n > 0)
+            printf("%s",receiveMessage);
+
+    }
     close(sockfd);
     return 0;
 }

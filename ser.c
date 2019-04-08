@@ -24,12 +24,16 @@ int main(){
     }
     bind(sockfd, (struct sockaddr *)&ser_addr, addr_len);
     listen(sockfd,5);
-
-    while(1){
-      int cli_sockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &addr_len);
-      send(cli_sockfd, message, sizeof(message), 0);
-      recv(cli_sockfd, inputBuffer, sizeof(inputBuffer), 0);
-      printf("Get:%s\n",inputBuffer);
-    }
+    int conn;
+    while(conn = accept(sockfd, (struct sockaddr *)NULL, NULL)) {
+        int pid;
+        if((pid = fork()) == 0) {
+            while (recv(conn, inputBuffer, sizeof(inputBuffer), 0)>0) {
+                send(conn, message, sizeof(message), 0);
+                printf("Get:%s\n",inputBuffer);
+            }
+            exit(0);
+        }
+     }
     return 0;
 }
