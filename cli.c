@@ -53,11 +53,14 @@ int main(){
         }
 
         if (FD_ISSET(0, &read_fds)){
-            scanf("%s", message);
+            fgets (message, MESSAGE_MAX_SIZE, stdin);
 
             char *send_message = malloc(MESSAGE_MAX_SIZE);
             strcpy(send_message, user);
             strcat(send_message, ": ");
+            if(strcmp(message, "\n") == 0) {
+                continue;
+            }
             strcat(send_message, message);
 
             send(sockfd, send_message, MESSAGE_MAX_SIZE, 0);
