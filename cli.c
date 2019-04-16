@@ -37,6 +37,12 @@ int main(){
     char msg_list[1000][MESSAGE_MAX_SIZE];
     int max_msg_list = 0;
 
+    char *join_message = malloc(MESSAGE_MAX_SIZE);
+    strcpy(join_message, user);
+    strcat(join_message, " join chatroom ");
+
+    send(sockfd, join_message, MESSAGE_MAX_SIZE, 0);
+
     while(1) {
         FD_ZERO(&read_fds);
         FD_SET(0, &read_fds);
