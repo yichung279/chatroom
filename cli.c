@@ -7,7 +7,15 @@
 #include<arpa/inet.h>
 #include <unistd.h>
 
+#define MESSAGE_MAX_SIZE 256
+char* concat(char *, char *);
+
 int main(){
+    char user[10]={};
+    system("clear");
+    printf("Your nickname: ");
+    scanf("%s", user);
+
 
     struct sockaddr_in ser_addr;
     int addr_len = sizeof(ser_addr);
@@ -23,25 +31,45 @@ int main(){
     }
     connect(sockfd, (struct sockaddr *)&ser_addr, addr_len);
 
-    char message[256];
-    while(1){
-        fgets(message, 256, stdin);
-        printf("%s", message);
-        if (strcmp(message, "exit\n") == 0)
-            break;
-        if (strcmp(message, "") != 0){
-            send(sockfd, message, sizeof(message), 0);
-            printf("Socket send: %s\n", message);
-            memset(message, 0, 256);
+    fd_set read_fds;
+    char message[MESSAGE_MAX_SIZE] = {};
+    char receive_message[MESSAGE_MAX_SIZE] = {};
+    char msg_list[1000][MESSAGE_MAX_SIZE];
+    int max_msg_list = 0;
+
+    while(1) {
+        FD_ZERO(&read_fds);
+        FD_SET(0, &read_fds);
+        FD_SET(sockfd, &read_fds);
+
+        if(select(sockfd+1, &read_fds, NULL, NULL, NULL) == -1){
+            exit(EXIT_FAILURE);
         }
 
-        char receiveMessage[100] = {};
-        int n = recv(sockfd, receiveMessage, sizeof(receiveMessage), 0);
-        if (n > 0)
-            printf("%s",receiveMessage);
+        if (FD_ISSET(0, &read_fds)){
+            scanf("%s", message);
 
+            char *send_message = malloc(MESSAGE_MAX_SIZE);
+            strcpy(send_message, user);
+            strcat(send_message, ": ");
+            strcat(send_message, message);
+
+            send(sockfd, send_message, MESSAGE_MAX_SIZE, 0);
+            memset(message, 0, MESSAGE_MAX_SIZE);
+        }
+
+        if (FD_ISSET(sockfd, &read_fds)){
+            int n = recv(sockfd, receive_message, MESSAGE_MAX_SIZE, 0);
+            strcpy(msg_list[max_msg_list], receive_message);
+            memset(receive_message, 0, MESSAGE_MAX_SIZE);
+            max_msg_list++;
+
+            system("clear");
+            for (int i = 0; i < max_msg_list; ++i)
+                printf("%s\n", msg_list[i]);
+
+        }
     }
     close(sockfd);
     return 0;
 }
-
