@@ -72,6 +72,7 @@ int main(){
                     boardcast(user_list, message);
                 }
                 else{
+                    q_conn_remove(user_list, i);
                     close(i);
                     FD_CLR(i, &master);
                 }
