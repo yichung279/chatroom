@@ -5,7 +5,7 @@
 #include<sys/socket.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
-#include <unistd.h>
+#include<unistd.h>
 
 #define MESSAGE_MAX_SIZE 256
 char* concat(char *, char *);
@@ -35,7 +35,7 @@ int main(){
     char message[MESSAGE_MAX_SIZE] = {};
     char receive_message[MESSAGE_MAX_SIZE] = {};
     char msg_list[1000][MESSAGE_MAX_SIZE];
-    int max_msg_list = 0;
+    int msg_list_size = 0;
 
     char *join_message = malloc(MESSAGE_MAX_SIZE);
     strcpy(join_message, user);
@@ -69,12 +69,12 @@ int main(){
 
         if (FD_ISSET(sockfd, &read_fds)){
             int n = recv(sockfd, receive_message, MESSAGE_MAX_SIZE, 0);
-            strcpy(msg_list[max_msg_list], receive_message);
+            strcpy(msg_list[msg_list_size], receive_message);
             memset(receive_message, 0, MESSAGE_MAX_SIZE);
-            max_msg_list++;
+            msg_list_size++;
 
             system("clear");
-            for (int i = 0; i < max_msg_list; ++i)
+            for (int i = 0; i < msg_list_size; ++i)
                 printf("%s\n", msg_list[i]);
 
         }

@@ -4,9 +4,9 @@
 #include<sys/types.h>
 #include<sys/socket.h>
 #include<netinet/in.h>
-#include <sys/select.h>
+#include<sys/select.h>
 
-#include "q_conn.c"
+#include "lib/q_conn.c"
 
 #define MESSAGE_MAX_SIZE 256+12
 
