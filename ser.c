@@ -8,7 +8,8 @@
 int main(){
 
     char inputBuffer[256] = {};
-    char message[] = {"Hi,this is server.\n"};
+    char tmp[267] = {};
+    char message[] = {"Server got: "};
     struct sockaddr_in ser_addr, cli_addr;
     int addr_len = sizeof(ser_addr);
 
@@ -27,10 +28,14 @@ int main(){
     int conn;
     while(conn = accept(sockfd, (struct sockaddr *)NULL, NULL)) {
         int pid;
-        if((pid = fork()) == 0) {
+        if((pid = fork()) != -1) {
             while (recv(conn, inputBuffer, sizeof(inputBuffer), 0)>0) {
-                send(conn, message, sizeof(message), 0);
                 printf("Get:%s\n",inputBuffer);
+                strcpy(tmp, message);
+                strcat(tmp, inputBuffer);
+                send(conn, tmp, sizeof(tmp), 0);
+                memset(inputBuffer, 0, sizeof(inputBuffer));
+                memset(tmp, 0, sizeof(tmp));
             }
             exit(0);
         }
